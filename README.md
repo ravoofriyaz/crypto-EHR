@@ -28,9 +28,6 @@ npm start
 
 ## Screenshots
 
-### Access Control
-![Access](screenshots/Access.png)
-
 ### Patient Dashboard
 ![Patient](screenshots/Patient-Dashboard.png)
 
@@ -39,6 +36,9 @@ npm start
 
 ### Pharmacist Dashboard
 ![Pharmacist](screenshots/Pharmacist-Dashboard.png)
+
+### Access Control
+![Access](screenshots/Access.png)
 
 ### Smart Hospital Recommendation
 ![AI](screenshots/smart-Hospital-recommendation.png)
