@@ -25,3 +25,27 @@ npm start
 cd frontend
 npm install
 npm start
+
+## Screenshots
+
+### Access Control
+![Access](screenshots/Access.png)
+
+### Patient Dashboard
+![Patient](screenshots/Patient-Dashboard.png)
+
+### Doctor Dashboard
+![Doctor](screenshots/Doctor-Dashboard.png)
+
+### Pharmacist Dashboard
+![Pharmacist](screenshots/Pharmacist-Dashboard.png)
+
+### Smart Hospital Recommendation
+![AI](screenshots/smart-Hospital-recommendation.png)
+
+### Audit Log
+![Audit](screenshots/Audit-Log.png)
+
+### Visit Token
+![Token](screenshots/Visit-Token.png)
+
