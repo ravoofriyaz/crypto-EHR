@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Environment Variables
+.env
+
+# Uploads and Temporary Files
+uploads/
+*.enc
+key_escaped.txt
+
+# Security Keys
+keys/private.pem
+
+# OS generated files
+.DS_Store
+Thumbs.db

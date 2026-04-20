@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication - Blockchain EHR</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <div class="full-screen">
+        <div class="container flex-center">
+
+            <div class="auth-container" id="container">
+
+                <!-- Sign Up Container (Hidden by default, slides in) -->
+                <div class="form-container sign-up-container">
+                    <form id="registerForm">
+                        <h1 id="registerTitle">Create Account</h1>
+                        <div class="social-container" style="margin: 20px 0;">
+                            <a href="#" class="social"><i class="fas fa-stethoscope"></i></a>
+                        </div>
+                        <span style="font-size: 0.8rem; margin-bottom: 10px;">Register securely</span>
+
+                        <input type="text" id="regName" placeholder="Full Name" required />
+                        <input type="text" id="regId" placeholder="Unique ID (e.g. Aadhar)" required />
+
+                        <!-- New Phone and OTP fields -->
+                        <div style="display:flex; width:100%; gap:5px; margin-bottom: 8px;">
+                            <select id="regCountryCode"
+                                style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; background:#eee; width:35%;">
+                                <option value="+91">🇮🇳 +91</option>
+                                <option value="+1">🇺🇸 +1</option>
+                                <option value="+44">🇬🇧 +44</option>
+                            </select>
+                            <input type="tel" id="regPhone" placeholder="Phone Number (e.g. 9876543210)" required
+                                style="flex:1; margin:0;" />
+                        </div>
+                        <div style="display:flex; width:100%; gap:5px; margin-bottom: 8px;">
+                            <input type="text" id="regOtp" placeholder="Enter OTP" required style="flex:1; margin:0;" />
+                            <button type="button" class="btn btn-secondary" onclick="sendOtp()" id="btnSendOtp"
+                                style="padding: 10px; width:auto; margin:0; border-radius: 4px;">Send OTP</button>
+                        </div>
+
+                        <input type="password" id="regPass" placeholder="Password" required />
+                        <input type="password" id="regConfirmPass" placeholder="Confirm Password" required />
+
+                        <!-- Doctor Specific Fields (Hidden by default) -->
+                        <div id="doctorFields" style="display: none; width: 100%; text-align: left; margin: 10px 0;">
+                            <h4 style="color: var(--primary-color); margin-bottom: 5px;">Professional Details</h4>
+                            <select id="regSpecialization"
+                                style="width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #ccc; background:#eee;">
+                                <option value="">Select Qualification</option>
+                                <option value="MBBS">MBBS</option>
+                                <option value="MD">MD</option>
+                                <option value="MS">MS</option>
+                                <option value="BDS">BDS</option>
+                                <option value="BHMS">BHMS</option>
+                            </select>
+                            <input type="text" id="regSpecialist" placeholder="Specialization (e.g. Cardiologist)"
+                                style="width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #ccc; background:#eee;" />
+                            <input type="text" id="regRegistrationNumber" placeholder="MCI Registration No."
+                                style="width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #ccc; background:#eee;" />
+                            <input type="number" id="regExperience" placeholder="Years of Experience"
+                                style="width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #ccc; background:#eee;" />
+                            <select id="regHospitalSelect" onchange="loadDepartments()"
+                                style="width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #ccc; background:#eee;">
+                                <option value="">Select Hospital</option>
+                            </select>
+                            <select id="regDepartmentSelect"
+                                style="width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #ccc; background:#eee;">
+                                <option value="">Select Specialization</option>
+                            </select>
+                            <input type="text" id="regWorkingHours" placeholder="Working Hours (e.g. 9 AM - 5 PM)"
+                                style="width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #ccc; background:#eee;" />
+                        </div>
+
+                        <!-- Pharmacist Specific Fields -->
+                        <div id="pharmacistFields"
+                            style="display: none; width: 100%; text-align: left; margin: 10px 0;">
+                            <h4 style="color: #6c5ce7; margin-bottom: 5px;">Pharmacy Details</h4>
+                            <input type="text" id="regShopName" placeholder="Pharmacy Shop Name"
+                                style="width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #ccc; background:#eee;" />
+                            <input type="text" id="regPharmacistLicense" placeholder="License Number"
+                                style="width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #ccc; background:#eee;" />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="margin-top: 15px;">Sign Up</button>
+                    </form>
+                </div>
+
+                <!-- Sign In Container (Default) -->
+                <div class="form-container sign-in-container">
+                    <form id="loginForm">
+                        <h1 id="loginTitle">Sign In</h1>
+                        <div class="social-container" style="margin: 20px 0;">
+                            <a href="#" class="social"><i class="fas fa-user-circle"></i></a>
+                        </div>
+                        <span style="font-size: 0.8rem; margin-bottom: 10px;">Access your secure records</span>
+
+                        <input type="text" id="loginId" placeholder="Unique ID" required />
+                        <input type="password" id="loginPass" placeholder="Password" required />
+                        
+                        <!-- Forgot Password Link -->
+                        <a href="forgot_password.html" style="font-size: 0.85rem; color: var(--text-muted); text-decoration: none; align-self: flex-end; margin-bottom: 15px; margin-top: 5px;">Forgot your password?</a>
+
+                        <button type="submit" class="btn btn-primary">Sign In</button>
+                    </form>
+                </div>
+
+                <!-- Overlay Container (The Slider) -->
+                <div class="overlay-container">
+                    <div class="overlay">
+                        <div class="overlay-panel overlay-left">
+                            <h1>Welcome Back!</h1>
+                            <p>To keep connected with us please login with your personal info</p>
+                            <button class="btn btn-ghost" id="signIn">Sign In</button>
+                        </div>
+                        <div class="overlay-panel overlay-right">
+                            <h1 id="overlayTitle">Hello, Patient!</h1>
+                            <p>Enter your personal details and start your journey with us</p>
+                            <button class="btn btn-ghost" id="signUp">Sign Up</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals or Notifications -->
+    <div id="notification" class="success-msg" style="position: fixed; top: 20px; right: 20px; z-index: 999;"></div>
+
+    <script src="app.js"></script>
+    <script>
+        // Init Logic for Styling based on Role
+        const urlParams = new URLSearchParams(window.location.search);
+        const role = urlParams.get('role') || 'patient';
+        const container = document.getElementById('container');
+
+        // Dynamic Text
+        const overlayTitle = document.getElementById('overlayTitle');
+        const loginTitle = document.getElementById('loginTitle');
+        const registerTitle = document.getElementById('registerTitle');
+
+        if (role === 'doctor') {
+            document.documentElement.style.setProperty('--primary-color', 'var(--secondary-color)');
+            document.documentElement.style.setProperty('--primary-dark', 'var(--secondary-dark)');
+
+            overlayTitle.innerText = "Hello, Doctor!";
+            loginTitle.innerText = "Doctor Login";
+            registerTitle.innerText = "Doctor Registration";
+
+            const df = document.getElementById('doctorFields');
+            if (df) df.style.display = 'block';
+
+        } else if (role === 'pharmacist') {
+            document.documentElement.style.setProperty('--primary-color', '#6c5ce7');
+            document.documentElement.style.setProperty('--primary-dark', '#5846d1');
+
+            overlayTitle.innerText = "Hello, Pharmacist!";
+            loginTitle.innerText = "Pharmacist Login";
+            registerTitle.innerText = "Pharmacist Registration";
+
+            const pf = document.getElementById('pharmacistFields');
+            if (pf) pf.style.display = 'block';
+        } else {
+            overlayTitle.innerText = "Hello, Patient!";
+            loginTitle.innerText = "Patient Login";
+            registerTitle.innerText = "Patient Registration";
+        }
+
+        // Slider Logic
+        const signUpButton = document.getElementById('signUp');
+        const signInButton = document.getElementById('signIn');
+
+        signUpButton.addEventListener('click', () => {
+            container.classList.add("right-panel-active");
+            if (role === 'doctor') {
+                loadHospitals();
+            }
+        });
+
+        signInButton.addEventListener('click', () => {
+            container.classList.remove("right-panel-active");
+        });
+
+    </script>
+</body>
+
+</html>

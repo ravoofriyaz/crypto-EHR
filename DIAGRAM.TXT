@@ -1,0 +1,89 @@
+5.2.1 Sequence Diagram
+
+The sequence diagram provides a detailed chronological view of the message exchanges between different objects or actors in the Cryptography-EHR system. It illustrates the step-by-step flow of execution for specific use cases, emphasizing the order in which operations like authentication, encryption, and data retrieval occur over time.
+
+[Insert Sequence Diagram Here]
+
+Fig 5.2.1: Sequence Diagram for Cryptography-EHR Platform
+
+This sequence diagram shows the step-by-step interaction during a patient's medical record retrieval process. It involves main components: Patient/Doctor (User), Frontend Interface, Backend API, Cryptography Module, and Database. The process starts when an authorized user requests access to a patient's record, triggering a Role-Based Access Control (RBAC) and OTP authentication check. Upon success, the backend retrieves the AES-encrypted data, uses the RSA key to decrypt the symmetric key, and validates the SHA-256 digital signature before sending the decrypted, verified medical record back to the user interface.
+
+--------------------------------------------------
+
+5.2.2 Use Case Diagram
+
+The use case diagram provides a high-level overview of how various actors interact with the Cryptography-EHR platform. It illustrates the functional requirements of the system from an end-user's perspective, focusing on user interactions, access controls, and core system functionalities.
+
+[Insert Use Case Diagram Here]
+
+Fig 5.2.2: Use Case Diagram for Cryptography-EHR Platform
+
+This use case diagram shows how the Cryptography-EHR platform enables highly secure medical data management and intelligent healthcare services. It involves four main actors: the Patient, the Doctor, the Pharmacist, and the Administrator. The process starts when a user logs into the dashboard, where the system captures credentials and enforces RBAC. Key interactions include patients exploring the symptom-to-specialization map, doctors creating AES-encrypted and RSA-signed medical records, pharmacists verifying secure prescriptions, and administrators monitoring hospital metrics and detailed audit logs.
+
+--------------------------------------------------
+
+5.2.3 Class Diagram
+
+The class diagram provides a static structure overview of the Cryptography-EHR platform. It illustrates the core system components, their attributes, methods, and the relationships between different entities such as users, medical records, and cryptographic controllers.
+
+[Insert Class Diagram Here]
+
+Fig 5.2.3: Class Diagram for Cryptography-EHR Platform
+
+This class diagram shows the underlying data model and object-oriented architecture of the Cryptography-EHR system. It involves primary classes such as User (subclassed into Patient, Doctor, Pharmacist, Admin), MedicalRecord, Hospital, and CryptoManager. The diagram details how the MedicalRecord class encapsulates vital attributes like encrypted payload, digital signatures, and hash values, while the User class manages profile data and access tier permissions. It also illustrates the critical one-to-many relationship between doctors and the secure records they authorize and sign for patients.
+
+--------------------------------------------------
+
+5.2.4 Collaboration Diagram
+
+The collaboration diagram provides a structural view of the message flow between objects within the Cryptography-EHR platform. Unlike a sequence diagram, it emphasizes the structural organization and the links between interacting objects rather than the strict chronological order of events.
+
+[Insert Collaboration Diagram Here]
+
+Fig 5.2.4: Collaboration Diagram for Cryptography-EHR Platform
+
+This collaboration diagram shows the structural relationships and real-time interaction pathways required to process a patient's symptom recommendation request. It involves objects like the Patient Interface, Auth Controller, Symptom Mapping Engine, and the Hospital Database. The interaction highlights how the patient submits a symptom query, which is securely routed to the mapping engine. The engine processes this to query the database, returning an optimal hospital department and specialist recommendation back through the secured interface, all while maintaining an active, non-repudiable audit trail of the interaction.
+
+--------------------------------------------------
+
+5.2.5 Data Flow Diagram
+
+The data flow diagram provides a visual representation of the path that data takes through the Cryptography-EHR system. It illustrates the boundaries of the system, data inputs and outputs, data storage, and the processes that transform data from point to point.
+
+[Insert Data Flow Diagram Here]
+
+Fig 5.2.5: Data Flow Diagram for Cryptography-EHR Platform
+
+This data flow diagram (DFD) maps the journey of sensitive health information from creation to secure storage and retrieval. It illustrates how plaintext medical data input by a physician flows into the Encryption Process, where AES-256-GCM secures the payload and RSA generates digital signatures. The encrypted package (Data Flow) is then routed to the Secure Database (Data Store). When an authorized read request occurs, the data flows back through the Decryption and Signature Verification Process before being presented as plaintext to the authenticated end-user, ensuring rigid end-to-end data privacy and integrity.
+
+--------------------------------------------------
+
+Class and System Descriptions
+
+User Actors:
+The User is the primary entity interacting with the system. This class represents the various roles (Patient, Doctor, Pharmacist, Administrator) that interact with the Cryptography-EHR platform interface through responsive dashboards to access medical services, manage health records, and perform administrative duties.
+
+Cryptography-EHR Platform:
+This is the core component of the project, responsible for managing the entire highly secure medical record system, symptom mapping, and cryptographic encryption/decryption operations.
+
+Attributes:
+Medical_Database: stores patient profile data, encrypted health reports, prescriptions, and digital signatures.
+Verified_User_Directory: list of authenticated users securely stored using SHA-256 hashing.
+Audit_Log_Directory: secure, non-repudiable directory where read/write access logs and emergency override events are stored for forensic tracking.
+
+Methods:
+initializeSession(), terminateSession(): control the secure platform flow and JWT/OTP user sessions.
+fetchMedicalRecords(): loads AES-encrypted patient data from the MongoDB database and processes decryption.
+captureSymptomData(): securely collects real-time symptom input from the patient dashboard.
+filterHospitalRecommendations(): processes symptom data to isolate and suggest specific hospital departments (e.g., Cardiology, Neurology).
+validateUserIdentity(): verifies and authenticates the user profile via Twilio OTP and RSA key checks.
+triggerEmergencyOverride(): sends immediate alerts to hospital administrators and securely logs temporary, emergency access to vital patient records.
+
+Database Manager:
+Represents the component used to interact with and manage all platform data securely.
+Methods: connect(), storeEncryptedData(), retrieveData(), updateRecord(), closeConnection(): functions used to execute strict CRUD operations within the MongoDB backend.
+
+Security & Notification Handler:
+Handles the cryptographic lifecycle and system notifications to inform users and administrators of critical events.
+Attributes: Cryptography parameters (AES-256-GCM configurations, RSA key pairs) and Twilio server details for message templates.
+Methods: encryptPayload(), executeDigitalSignature(), verifySignature(), sendOTPNotification(): secures data at rest and in transit, and alerts system administrators when critical events or emergency data overrides occur.

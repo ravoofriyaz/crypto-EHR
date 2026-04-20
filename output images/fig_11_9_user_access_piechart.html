@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fig 11.9: Distribution of User Access</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f6f9;
+            margin: 0;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 700px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 24px;
+        }
+
+        p.subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chart-container">
+        <h2>Distribution of User Roles Accessing the System</h2>
+        <p class="subtitle">Fig 11.9: Cryptography-EHR Ecosystem Participation</p>
+        <canvas id="userAccessChart"></canvas>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('userAccessChart').getContext('2d');
+        const userAccessChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: [
+                    'Patients (50%)',
+                    'Doctors (25%)',
+                    'Pharmacists (15%)',
+                    'Administrators (10%)'
+                ],
+                datasets: [{
+                    data: [50, 25, 15, 10],
+                    backgroundColor: [
+                        '#3498db', // Blue for Patients
+                        '#2ecc71', // Green for Doctors
+                        '#f1c40f', // Yellow for Pharmacists
+                        '#e74c3c'  // Red for Admins
+                    ],
+                    hoverOffset: 12,
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            font: {
+                                size: 16,
+                                family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                            },
+                            padding: 20
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return ' ' + context.label.split(' ')[0] + ': ' + context.raw + '% of total ecosystem.';
+                            }
+                        },
+                        titleFont: { size: 15 },
+                        bodyFont: { size: 14 },
+                        padding: 12
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

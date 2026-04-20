@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Figure 2: Secure Record Encryption and Storage Workflow</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+    <style>body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: white; } .mermaid-container { padding: 20px; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background-color: #fff; }</style>
+</head>
+<body>
+    <h2>Figure 2: Secure Record Encryption and Storage Workflow</h2>
+    <div class="mermaid-container">
+        <div class="mermaid">
+            flowchart TD
+                A[Patient Uploads Record] --> B[Generate AES-256 Session Key]
+                B --> C[Encrypt Data using AES-GCM]
+                C --> D[Generate Authentication Tag]
+                D --> E[Encrypt AES Key using ECC <br/> ECDH Shared Secret]
+                E --> F[(Store Ciphertext + <br/> Encrypted Key + Tag in MongoDB)]
+        </div>
+    </div>
+</body>
+</html>

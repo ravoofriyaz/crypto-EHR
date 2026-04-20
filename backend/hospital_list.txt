@@ -1,0 +1,10 @@
+﻿Initial hospital count: 6
+Hospitals to delete: 0
+
+Remaining hospitals (6):
+- Andhra Hospitals, Eluru (HOSP001)
+- Aayush Hospitals (HOSP002)
+- Asram General & Super Speciality Hospital (HOSP003)
+- Siri Super Speciality Hospital (HOSP006)
+- Blossoms ChildrenΓÇÖs Hospital (HOSP012)
+- Government General Hospital, Eluru (HOSP017)

@@ -1,0 +1,9 @@
+﻿Starting Full Flow Test (Encrypted IDs)...
+
+1. Registering Patient: patient_1771859870821
+   Γ£à Patient Registered
+
+2. Registering Doctor: doctor_1771859870821
+   Γ£à Doctor Registered
+
+3. Doctor Adding Record for Patient...

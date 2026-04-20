@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fig 7.2 - System Validation</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#ffffff', primaryTextColor: '#000000', primaryBorderColor: '#000000', lineColor: '#000000' } });
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: white;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: black;
+        }
+
+        .mermaid {
+            transform: scale(1.4);
+            transform-origin: top center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Cryptography-EHR System Validation</h2>
+        <div class="mermaid">
+            flowchart TD
+            A([<b>Live Access Request</b>]) --> B([<b>Credentials Capture</b>])
+            B --> C([<b>OTP Authentication</b>])
+            C --> D([<b>Cryptographic Match</b>])
+            D --> E([<b>Access Validation</b>])
+
+            classDef default fill:#fff,stroke:#000,stroke-width:2px,color:#000;
+            class A,B,C,D,E default;
+        </div>
+        <p
+            style="margin-top: 50px; font-weight: bold; color: #1e40af; background: #bfdbfe; display: inline-block; padding: 5px 15px;">
+            Fig 7.2: Validation</p>
+    </div>
+</body>
+
+</html>

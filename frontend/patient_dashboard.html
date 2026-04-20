@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Portal - SecureEHR</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-brand patient">
+            <i class="fas fa-heartbeat"></i>
+            <span>SecureEHR</span>
+        </div>
+
+        <ul class="sidebar-nav">
+            <li class="nav-item">
+                <a href="#" class="nav-link active" onclick="showSection('section-dashboard', this)">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link"
+                    onclick="showSection('section-appointments', this); loadMyAppointments(); loadBookingHospitals();">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Appointments</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" onclick="showSection('section-records', this); getMyRecords();">
+                    <i class="fas fa-file-medical"></i>
+                    <span>My Records</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" onclick="showSection('section-access-control', this); fetchAccessList();">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Access Control</span>
+                </a>
+            </li>
+
+        </ul>
+
+        <div class="logout-container">
+            <button class="btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div>
+                <h1>Welcome Back, <span id="displayPatientName">Patient</span></h1>
+                <p>ID: <span id="displayPatientId">Loading...</span></p>
+            </div>
+            <div class="profile-icon"
+                style="width: 50px; height: 50px; background: var(--primary-color); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+
+        <!-- SECTION: DASHBOARD (Home) -->
+        <div id="section-dashboard" class="content-section">
+            <div class="dashboard-grid">
+                <!-- Symptom Based Recommendation -->
+                <div class="dashboard-card"
+                    style="grid-column: 1 / -1; background: linear-gradient(135deg, #6c5ce7, #a29bfe); color: white; padding: 30px; border: none; border-radius: 20px; box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div
+                            style="width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-size: 1.5rem;">
+                            <i class="fas fa-stethoscope"></i>
+                        </div>
+                        <div>
+                            <h2 style="margin: 0; font-size: 1.5rem;">Smart Hospital Recommendation</h2>
+                            <p style="margin: 0; opacity: 0.9;">Not sure where to go? Describe your symptoms below.</p>
+                        </div>
+                    </div>
+
+                    <div
+                        style="display: flex; gap: 10px; background: rgba(255,255,255,0.15); padding: 10px; border-radius: 15px;">
+                        <div style="position: relative; flex: 1;">
+                            <input type="text" id="symptomSearch" autocomplete="off"
+                                placeholder="Describe your complaint (e.g., chest pain, skin rash, child fever...)"
+                                style="width: 100%; padding: 15px; border-radius: 10px; border: none; font-size: 1rem; outline: none; background: white; color: #333;"
+                                oninput="handleSymptomInput(this.value)">
+                            <div id="symptomSuggestions"
+                                style="position: absolute; top: 100%; left: 0; right: 0; background: white; color: #333; border-radius: 10px; margin-top: 5px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 1000; display: none; overflow-y: auto; max-height: 200px;">
+                            </div>
+                        </div>
+                        <button class="btn"
+                            style="background: #2d3436; color: white; padding: 0 25px; border-radius: 10px; font-weight: 600; transition: transform 0.2s;"
+                            onclick="getHospitalRecommendation()">
+                            <i class="fas fa-search-plus" style="margin-right: 8px;"></i> Search
+                        </button>
+                    </div>
+
+                    <div id="recommendationResults"
+                        style="margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; display: none;">
+                        <!-- Results will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Profile Summary Card -->
+                <div class="dashboard-card">
+                    <h3><i class="fas fa-id-card" style="color: var(--primary-color); margin-right: 8px;"></i> Profile
+                        Status</h3>
+                    <p><strong>Phone:</strong> <span id="pPhone">Not Set</span></p>
+                    <p><strong>Gender:</strong> <span id="pGender">Not Set</span></p>
+                    <p><strong>DOB:</strong> <span id="pDOB">Not Set</span></p>
+                    <p><strong>Blood Group:</strong> <span id="pBloodGroup">Not Set</span></p>
+
+                    <button class="btn btn-secondary" style="font-size: 0.8rem; padding: 8px 15px;"
+                        onclick="toggleEditProfile()">Edit Info</button>
+
+                    <div id="patientInfoEdit"
+                        style="display:none; margin-top:15px; border-top: 1px solid #eee; padding-top: 15px;">
+                        <input type="text" id="editName" placeholder="Name">
+                        <input type="text" id="editPhone" placeholder="Phone">
+                        <select id="editGender"
+                            style="width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; background: #eee;">
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <input type="date" id="editDOB" placeholder="Date of Birth" style="color: #555;">
+                        <select id="editBloodGroup"
+                            style="width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; background: #eee;">
+                            <option value="">Select Blood Group</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                        <button class="btn btn-primary" style="padding: 8px 15px;"
+                            onclick="updateProfile()">Save</button>
+                    </div>
+                </div>
+
+                <!-- My Hospitals Summary Card -->
+                <div class="dashboard-card" id="hospVisitedCard">
+                    <h3><i class="fas fa-hospital-user" style="color:var(--secondary-color); margin-right:8px;"></i> My
+                        Hospitals</h3>
+                    <div id="hospSummary">
+                        <p style="color:#888;">Loading summary...</p>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top:10px; width:100%;"
+                        onclick="showSection('section-records', document.querySelector('a[onclick*=\'section-records\']')); getMyRecords();">
+                        View Full History
+                    </button>
+                </div>
+
+                <!-- Audit Log Section (Small Preview) -->
+            </div>
+        </div>
+        <!-- SECTION: APPOINTMENTS -->
+        <div id="section-appointments" class="content-section" style="display: none;">
+            <div class="section-header" style="margin-bottom: 25px;">
+                <h2 style="color: var(--secondary-color); font-size: 1.8rem;">
+                    <i class="fas fa-calendar-check" style="margin-right: 12px;"></i>Appointment Management
+                </h2>
+                <p style="color: var(--text-muted);">Schedule new consultations or view your upcoming visits.</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Book Appointment Form -->
+                <div class="dashboard-card" style="padding: 25px; border-top: 6px solid var(--secondary-color);">
+                    <div
+                        style="display: flex; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+                        <div
+                            style="width: 45px; height: 45px; background: #e3f2fd; color: var(--secondary-color); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-size: 1.2rem;">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.2rem; color: var(--text-dark);">Book New Appointment</h3>
+                            <small style="color: var(--text-muted);">Fill in the details below</small>
+                        </div>
+                    </div>
+
+                    <div class="appointment-form-fields">
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label style="font-weight: 600; color: #555; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-hospital" style="margin-right: 8px; color: #888;"></i>Select Hospital
+                            </label>
+                            <select id="bookHospitalSelect" onchange="loadBookingDepartments()"
+                                style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: #fdfdfd; font-size: 1rem; transition: border-color 0.3s;"></select>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label style="font-weight: 600; color: #555; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-layer-group" style="margin-right: 8px; color: #888;"></i>Select
+                                Specialization
+                            </label>
+                            <select id="bookDeptSelect" onchange="loadBookingDoctors()"
+                                style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: #fdfdfd; font-size: 1rem;"></select>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label style="font-weight: 600; color: #555; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-user-md" style="margin-right: 8px; color: #888;"></i>Select Doctor
+                            </label>
+                            <select id="bookDoctorSelect" onchange="loadAvailableSlots()"
+                                style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: #fdfdfd; font-size: 1rem;"></select>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label style="font-weight: 600; color: #555; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-calendar-day" style="margin-right: 8px; color: #888;"></i>Select Date
+                            </label>
+                            <input type="date" id="bookDate" onchange="loadAvailableSlots()"
+                                style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: #fdfdfd; font-size: 1rem;">
+                        </div>
+
+                        <div id="slotsSection"
+                            style="margin-top: 25px; background: #f8f9fa; padding: 20px; border-radius: 15px; border: 1px solid #eee;">
+                            <h4
+                                style="margin-top: 0; margin-bottom: 15px; font-size: 0.95rem; color: #444; display: flex; align-items: center;">
+                                <i class="fas fa-clock"
+                                    style="margin-right: 10px; color: var(--secondary-color);"></i>Available Time Slots
+                            </h4>
+                            <div id="slotsContainer">
+                                <p class="text-muted" style="font-size: 0.9rem; font-style: italic;">Please select a
+                                    doctor and date to view available timings.</p>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="bookAppointment()"
+                            style="margin-top: 25px; width: 100%; padding: 15px; border-radius: 12px; font-size: 1.1rem; font-weight: 600; box-shadow: 0 5px 15px rgba(9, 132, 227, 0.3);">
+                            <i class="fas fa-check-circle" style="margin-right: 10px;"></i>Confirm Appointment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- My Booked Appointments -->
+                <div class="dashboard-card" style="padding: 25px; border-top: 6px solid var(--primary-color);">
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+                        <div style="display: flex; align-items: center;">
+                            <div
+                                style="width: 45px; height: 45px; background: #e8f5e9; color: var(--primary-color); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-size: 1.2rem;">
+                                <i class="fas fa-list-ul"></i>
+                            </div>
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.2rem; color: var(--text-dark);">My Appointments</h3>
+                                <small style="color: var(--text-muted);">Upcoming and past visits</small>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline" onclick="loadMyAppointments()"
+                            style="padding: 5px 15px; font-size: 0.85rem;">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div id="patientAppointmentsList" style="max-height: 550px; overflow-y: auto; padding-right: 5px;">
+                        <p class="text-muted">Loading appointments...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- SECTION: MY RECORDS & AUDIT -->
+        <div id="section-records" class="content-section" style="display: none;">
+            <div class="dashboard-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>Medical History</h3>
+                    <button class="btn btn-primary" onclick="getMyRecords()"><i class="fas fa-sync"></i>
+                        Refresh</button>
+                </div>
+                <div id="recordsList" style="margin-top: 1rem;">
+                    <p style="color: var(--text-muted); text-align: center; padding: 20px;">Click Refresh to load your
+                        history.</p>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- SECTION: ACCESS CONTROL & AUDIT -->
+        <div id="section-access-control" class="content-section" style="display: none;">
+            <div class="dashboard-grid">
+                <!-- Grant Access Card -->
+                <div class="dashboard-card">
+                    <h3><i class="fas fa-key" style="color: var(--primary-color); margin-right: 8px;"></i> Grant Doctor
+                        Access</h3>
+                    <p>Search for a doctor by Phone Number or Doctor ID to grant access.</p>
+
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <button id="btnDocSearchPhone" class="btn"
+                            style="flex: 1; border: 2px solid var(--primary-color); background: #f0fff4; color: var(--primary-color); font-size: 0.9rem;"
+                            onclick="setDocSearchType('num')">
+                            <i class="fas fa-phone"></i> Phone
+                        </button>
+                        <button id="btnDocSearchId" class="btn"
+                            style="flex: 1; border: 1px solid #ddd; background: #f8f9fa; color: #888; font-size: 0.9rem;"
+                            onclick="setDocSearchType('id')">
+                            <i class="fas fa-id-card"></i> Doctor ID
+                        </button>
+                    </div>
+
+                    <input type="hidden" id="docSearchType" value="num">
+
+                    <div id="docSearchNumGroup" style="display:flex; gap: 10px; margin-bottom: 20px;">
+                        <select id="docCountryCode"
+                            style="padding: 12px; border-radius: 8px; border: 1px solid #ccc; background:#eee; width: 30%;">
+                            <option value="+91">🇮🇳 +91</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+44">🇬🇧 +44</option>
+                        </select>
+                        <input type="text" id="grantDoctorPhone" placeholder="Phone Number (e.g. 9876543210)"
+                            style="flex:1; padding: 12px; border-radius: 8px; border: 1px solid #ccc;">
+                        <button class="btn btn-primary" onclick="searchDoctorForGrant()">Search</button>
+                    </div>
+
+                    <div id="docSearchIdGroup" style="display:none; gap: 10px; margin-bottom: 20px;">
+                        <input type="text" id="grantDoctorId" placeholder="Enter Doctor Wallet/ID"
+                            style="flex:1; padding: 12px; border-radius: 8px; border: 1px solid #ccc;">
+                        <button class="btn btn-primary" onclick="searchDoctorForGrant()">Search</button>
+                    </div>
+
+                    <script>
+                        function setDocSearchType(type) {
+                            document.getElementById('docSearchType').value = type;
+                            const btnPhone = document.getElementById('btnDocSearchPhone');
+                            const btnId = document.getElementById('btnDocSearchId');
+                            if (type === 'num') {
+                                document.getElementById('docSearchNumGroup').style.display = 'flex';
+                                document.getElementById('docSearchIdGroup').style.display = 'none';
+                                btnPhone.style.border = '2px solid var(--primary-color)';
+                                btnPhone.style.background = '#f0fff4';
+                                btnPhone.style.color = 'var(--primary-color)';
+                                btnId.style.border = '1px solid #ddd';
+                                btnId.style.background = '#f8f9fa';
+                                btnId.style.color = '#888';
+                            } else {
+                                document.getElementById('docSearchNumGroup').style.display = 'none';
+                                document.getElementById('docSearchIdGroup').style.display = 'flex';
+                                btnId.style.border = '2px solid var(--primary-color)';
+                                btnId.style.background = '#f0fff4';
+                                btnId.style.color = 'var(--primary-color)';
+                                btnPhone.style.border = '1px solid #ddd';
+                                btnPhone.style.background = '#f8f9fa';
+                                btnPhone.style.color = '#888';
+                            }
+                        }
+                    </script>
+
+                    <!-- Search Results -->
+                    <div id="docSearchResults" style="margin-bottom: 20px;"></div>
+
+                    <!-- Final Confirmation (Hidden initially) -->
+                    <div id="grantConfirmSection"
+                        style="display:none; background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 5px solid var(--primary-color);">
+                        <p style="margin-bottom: 10px;">Grant access to: <strong id="selectedDocName"></strong></p>
+                        <p style="font-size: 0.8rem; color: #666; margin-bottom: 15px;">ID: <span id="selectedDocId"
+                                style="font-family: monospace;"></span></p>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="number" id="grantDuration" placeholder="Days (Optional)"
+                                style="width: 130px; margin: 0;" min="1">
+                            <button class="btn btn-primary" onclick="grantAccessFinal()">Confirm Grant</button>
+                            <button class="btn btn-secondary" onclick="resetDocSearch()">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Access List -->
+                <div class="dashboard-card">
+                    <h3><i class="fas fa-user-lock" style="color: var(--secondary-color); margin-right: 8px;"></i>
+                        Authorized Doctors</h3>
+                    <p>These doctors currently have access. You can revoke it anytime.</p>
+
+                    <div style="margin-bottom: 10px;">
+                        <button class="btn btn-secondary" onclick="fetchAccessList()" style="font-size: 0.9rem;">Refresh
+                            List</button>
+                    </div>
+
+                    <div class="resizable-container">
+                        <div id="accessListContainer" style="padding: 10px;">
+                            <p style="color: var(--text-muted);">Loading authorization list...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Consolidated Audit Log -->
+            <div class="dashboard-card" style="margin-top: 2rem;">
+                <h3><i class="fas fa-history" style="color: #6c5ce7; margin-right: 8px;"></i> Activity & Access Logs
+                </h3>
+                <p>See who accessed your data and when records were added.</p>
+                <div style="margin-bottom: 15px;">
+                    <button class="btn btn-outline" onclick="loadAuditLog()">Refresh Logs</button>
+                </div>
+                <div class="resizable-container" style="height: 450px;">
+                    <table style="width:100%; border-collapse: collapse;">
+                        <thead>
+                            <tr
+                                style="text-align: left; color: var(--text-muted); position: sticky; top: 0; background: white; z-index: 10;">
+                                <th style="padding: 10px; border-bottom: 1px solid #eee;">Time</th>
+                                <th style="padding: 10px; border-bottom: 1px solid #eee;">Action</th>
+                                <th style="padding: 10px; border-bottom: 1px solid #eee;">Details</th>
+                                <th style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditTableBody">
+                            <tr>
+                                <td colspan="4" style="padding: 10px; text-align: center;">Loading logs...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification" class="success-msg" style="position: fixed; top: 20px; right: 20px;"></div>
+
+    <script src="app.js"></script>
+    <script>
+        // Inline Profile Load
+        window.onload = function () {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user || user.role !== 'patient') {
+                window.location.href = 'index.html';
+                return;
+            }
+            document.getElementById('displayPatientName').innerText = user.name;
+            document.getElementById('displayPatientId').innerText = user.userId;
+
+            // For profile card
+            document.getElementById('pPhone').innerText = user.phone || "Not Set";
+            document.getElementById('pGender').innerText = user.gender || "Not Set";
+            document.getElementById('pDOB').innerText = user.dob || "Not Set";
+            document.getElementById('pBloodGroup').innerText = user.bloodGroup || "Not Set";
+
+            // Auto Load
+            loadAuditLog();
+            loadHospSummary();
+            loadBookingHospitals();
+            loadMyAppointments();
+
+            // Set min date for booking to today
+            const bookDateInput = document.getElementById('bookDate');
+            if (bookDateInput) {
+                bookDateInput.min = new Date().toISOString().split('T')[0];
+            }
+        }
+    </script>
+</body>
+
+</html>

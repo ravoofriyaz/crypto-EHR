@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto EHR - Select Role</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Using FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <main class="full-screen">
+        <div class="container" style="text-align: center;">
+            <div style="margin-bottom: 3rem;">
+                <h1 style="font-size: 2.5rem; color: #2d3436;">Welcome to <span
+                        style="color: var(--secondary-color);">CryptoEHR</span></h1>
+                <p style="font-size: 1.2rem;">Encrypted. Secure. Privacy-Preserving.<br>Please select your role to
+                    continue.</p>
+            </div>
+
+            <div
+                style="display: flex; flex-wrap: wrap; gap: 40px; max-width: 1000px; margin: 0 auto; justify-content: center;">
+
+                <!-- Patient Card -->
+                <div class="role-card patient" onclick="selectRole('patient')">
+                    <div class="role-icon" style="color: var(--primary-color);">
+                        <i class="fas fa-user-injured"></i>
+                    </div>
+
+                    <button class="btn btn-primary">Patient Login &rarr;</button>
+                </div>
+
+                <!-- Doctor Card -->
+                <div class="role-card doctor" onclick="selectRole('doctor')">
+                    <div class="role-icon" style="color: var(--secondary-color);">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+
+                    <button class="btn btn-secondary">Doctor Login &rarr;</button>
+                </div>
+
+                <!-- Pharmacist Card -->
+                <div class="role-card pharmacist" onclick="selectRole('pharmacist')"
+                    style="flex: 1; min-width: 250px; max-width: 300px;">
+                    <div class="role-icon" style="color: #6c5ce7;">
+                        <i class="fas fa-prescription-bottle-alt"></i>
+                    </div>
+
+                    <button class="btn"
+                        style="background:#6c5ce7; color:white; width:100%; padding:10px; border-radius:8px; border:none; margin-top:15px; cursor:pointer;">Pharmacist
+                        Login &rarr;</button>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function selectRole(role) {
+            // Redirect to the unified Auth page with the role parameter
+            window.location.href = `auth.html?role=${role}`;
+        }
+    </script>
+</body>
+
+</html>

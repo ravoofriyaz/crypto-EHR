@@ -1,0 +1,5 @@
+﻿Searching for Role: doctor, Hospital: 'HOSP012', Dept: 'Pediatrics'
+Found 1 doctors.
+- Doctor Name: 'vinay', Dept: 'Pediatrics', Specialist: 'Pediatrics'
+- Dept buffer: <Buffer 50 65 64 69 61 74 72 69 63 73>
+Found 1 doctors with loose match.

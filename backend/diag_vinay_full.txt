@@ -1,0 +1,3 @@
+﻿Doctor: vinay (8c11949fd243dc12aabffc7d86cefe693e67e95db168875e08e37024e04536f1)
+Total appointments for Dr. Vinay: 1
+- Patient: RIyaz, Date: "2026-02-27", Time: "09:00 AM - 09:30 AM", Status: "Approved"

@@ -1,0 +1,507 @@
+Optimized Bio-ECC-AES Framework: A Hybrid Cryptographic Model for Secure and Emergency-Accessible Electronic Health Records
+
+Md Ravoof Riyaz, U Mythri, V Puneeth Kumar, S Siva Surya Teja
+Department of Computer Science and Engineering
+Ramachandra Engineering College, Eluru, India
+{22mela0533, 22mela0562, 22mela0563, 22mela0554}@rec.edu.in
+
+Mrs. B. Rajeswari, Assistant Professor
+Department of Computer Science and Engineering
+Ramachandra Engineering College, Eluru, India
+rajeswari.b@rec.edu.in
+
+Abstract—Electronic Health Records (EHRs) have reshaped healthcare delivery by replacing paper-based documentation with centralized digital systems that enable rapid access to patient information. Despite these benefits, concerns surrounding privacy, data breaches, and computational overhead remain significant barriers to widespread adoption—especially in mobile and resource-constrained environments. Traditional hybrid cryptographic frameworks, particularly those combining AES and RSA, enhance confidentiality but often introduce substantial processing latency. In some reported implementations, encrypting a 500 KB medical record requires over five seconds, making real-time clinical usage inefficient.
+
+This study presents an optimized Bio-ECC-AES hybrid framework designed to improve both performance and emergency accessibility without compromising security. The proposed model replaces RSA-2048 with Elliptic Curve Cryptography (ECC-256) for key exchange, achieving equivalent cryptographic strength with dramatically reduced computational cost. Experimental evaluation demonstrates a reduction in key generation time from 1240.28 ms to 5.16 ms. Additionally, AES-GCM is employed instead of separate AES-CBC and SHA-256 modules, enabling authenticated encryption in a single operation and improving encryption efficiency by 16.26%.
+
+Beyond performance enhancements, the framework introduces an emergency “Break-Glass” mechanism based on Fuzzy Vault bio-cryptography. This allows secure recovery of decryption keys using patient biometrics during critical situations where explicit consent cannot be obtained. Implemented using a Node.js and MongoDB architecture, the system supports encrypted storage of diverse medical formats, including PDF and JPG files. The results indicate that the proposed framework offers a high-performance, scalable, and patient-centric alternative to legacy hybrid EHR security models.
+
+---
+DIAGRAM: Figure 1: Overall Bio-ECC-AES Secure EHR Architecture
+```mermaid
+flowchart TD
+    subgraph Users
+        Direction TB
+        P[Patient App]
+        D[Doctor Dashboard]
+        A[Admin Panel]
+    end
+
+    subgraph API["Node.js + Express REST API"]
+        Direction TB
+        API1["ECC Key Exchange (ECDH)"]
+        API2["AES-256-GCM Encryption/Decryption"]
+        API3["Biometric Break-Glass Module (Fuzzy Vault)"]
+        API4["Role-Based Access Control (RBAC)"]
+        API5["Audit Logging"]
+    end
+
+    subgraph Database["MongoDB"]
+        Direction TB
+        DB1["Encrypted EHR Records (PDF/JPG/JSON)"]
+        DB2["Encrypted AES Keys (ECC Protected)"]
+        DB3["Biometric Vault Data"]
+        DB4["Access Logs"]
+    end
+
+    Users --> API
+    API --> Database
+```
+---
+
+I. INTRODUCTION
+The digital transformation of healthcare has led to the widespread adoption of Electronic Health Records (EHRs), replacing traditional paper-based medical documentation. By consolidating laboratory results, imaging reports, prescriptions, and clinical notes into unified digital systems, EHRs enhance efficiency, reduce administrative errors, and improve continuity of care. However, the same centralization that makes EHR systems convenient also makes them attractive targets for cyberattacks.
+
+Healthcare data is particularly sensitive. Unauthorized disclosure can lead not only to privacy violations but also to discrimination, reputational damage, and financial harm for patients. As a result, ensuring confidentiality, integrity, and controlled access has become a foundational requirement of modern EHR architectures.
+
+Hybrid cryptographic models have emerged as a practical solution to these challenges. A widely adopted approach combines the Advanced Encryption Standard (AES) for data encryption with the Rivest–Shamir–Adleman (RSA) algorithm for secure key exchange. While this AES-RSA model strengthens security compared to standalone encryption methods, it introduces measurable computational overhead. Prior evaluations report encryption processing times exceeding five seconds for moderately sized medical records (500 KB), along with increased memory consumption. Such delays are problematic in mobile healthcare applications and emergency clinical workflows, where timely access to information is critical.
+
+Another limitation of conventional EHR security frameworks is their reliance on rigid role-based access control. Although effective for routine operations, static access policies can obstruct urgent treatment when patients are unconscious or otherwise unable to provide authorization. In emergency medicine, delays caused by encryption barriers may compromise patient outcomes.
+
+To address these concerns, this research proposes an optimized Bio-ECC-AES hybrid framework. The model replaces RSA-2048 with Elliptic Curve Cryptography (ECC-256), significantly reducing key management latency while maintaining equivalent security strength. Furthermore, AES-GCM is adopted to provide integrated confidentiality and integrity verification within a single cryptographic process. In addition, a biometric “Break-Glass” mechanism based on the Fuzzy Vault scheme is incorporated to enable secure emergency access through patient biometrics.
+
+---
+DIAGRAM: Figure 2: Secure Record Encryption and Storage Workflow
+```mermaid
+flowchart TD
+    A[Patient Uploads Record] --> B[Generate AES-256 Session Key]
+    B --> C[Encrypt Data using AES-GCM]
+    C --> D[Generate Authentication Tag]
+    D --> E[Encrypt AES Key using ECC <br/> ECDH Shared Secret]
+    E --> F[(Store Ciphertext + <br/> Encrypted Key + Tag in MongoDB)]
+```
+---
+
+By combining performance optimization with emergency-ready functionality, the proposed framework aims to deliver a secure, scalable, and practical solution for next-generation EHR systems.
+
+II. RELATED WORK
+The protection of medical information has long been a central concern in healthcare informatics. As hospitals transitioned from paper-based documentation to electronic record systems, researchers began exploring cryptographic mechanisms capable of safeguarding highly sensitive patient data. Over time, various approaches have been proposed to balance confidentiality, integrity, accessibility, and computational efficiency. This section reviews key developments relevant to the proposed Bio-ECC-AES framework.
+
+A. Hybrid AES–RSA Cryptographic Models
+One of the most widely studied approaches for securing Electronic Health Records involves combining symmetric and asymmetric cryptography. In such hybrid systems, the Advanced Encryption Standard (AES) is used to encrypt patient data due to its speed and efficiency, while the Rivest–Shamir–Adleman (RSA) algorithm is employed for secure key exchange. This AES–RSA combination improves confidentiality compared to single-algorithm solutions and has been shown to provide strong protection against unauthorized access.
+
+However, performance analyses of these systems reveal certain limitations. While encryption strength is enhanced, RSA-based key management introduces noticeable latency. Empirical evaluations indicate that processing moderately sized medical files (approximately 500 KB) can require several seconds, particularly during key generation and encryption phases. This computational cost becomes more pronounced in mobile or resource-constrained environments, where processing power and battery capacity are limited. As a result, the AES–RSA model, although secure, does not fully resolve the security–performance trade-off.
+
+B. Bio-Cryptography and Biometric Key Protection
+Beyond traditional encryption models, researchers have explored integrating biometric characteristics into cryptographic systems. Bio-cryptography leverages unique human traits—such as fingerprints or iris patterns—to secure or reconstruct encryption keys. Techniques such as the fuzzy vault and fuzzy commitment schemes bind cryptographic secrets to biometric feature sets, making key recovery dependent on legitimate biological input.
+
+Studies in this domain demonstrate promising resistance against impersonation attacks, often reporting negligible false acceptance rates when implemented under controlled conditions. These approaches are particularly attractive for healthcare systems because they align with patient-centric authentication models. However, many implementations focus primarily on authentication rather than integrating biometric mechanisms into broader hybrid encryption frameworks.
+
+---
+DIAGRAM: Figure 3: Threat Model — Bio-ECC-AES Secure EHR System
+```mermaid
+flowchart LR
+    subgraph Threat_Actors [Client Boundary]
+        EA[External Attacker]
+        MITM[Man-in-the-Middle]
+        MI[Malicious Insider]
+    end
+
+    subgraph Network [Network Boundary]
+        HTTPS[HTTPS/TLS Intrusion]
+    end
+
+    subgraph Server [Secure Server]
+        ECC[ECC Key Exchange]
+        AES[AES-256-GCM Encryption]
+        Vault[Biometric Break-Glass Vault]
+        RBAC[RBAC + Audit Logging]
+    end
+
+    EA -->|Spoofing| Network
+    MITM -->|Tampering| Network
+    MI -->|Data Exfiltration| Network
+    Network --> Server
+
+    style Threat_Actors fill:#f9f,stroke:#333
+    style Network fill:#ff9,stroke:#333
+    style Server fill:#bbf,stroke:#333
+```
+---
+
+C. Attribute-Based Encryption for Medical Records
+Another line of research addresses flexible access control through Attribute-Based Encryption (ABE). In ABE systems, decryption rights are associated with user attributes rather than predefined roles. This allows more dynamic access policies and supports fine-grained permission structures within medical institutions. ABE has been applied to mobile healthcare environments, enabling patients to manage their own encrypted records while granting selective access to healthcare providers.
+
+Despite its flexibility, ABE often introduces additional computational complexity, especially during key generation and policy enforcement. Furthermore, most evaluations emphasize encryption and decryption timings without comprehensively assessing memory consumption or scalability within real-world hospital infrastructures.
+
+D. Lightweight and Elliptic Curve Cryptography Approaches
+To reduce computational overhead, recent studies have explored lightweight cryptographic alternatives. Elliptic Curve Cryptography (ECC) has gained particular attention due to its ability to provide equivalent security strength with significantly smaller key sizes compared to RSA. By relying on the mathematical difficulty of the Elliptic Curve Discrete Logarithm Problem (ECDLP), ECC achieves strong protection while reducing processing time and storage requirements.
+
+Comparative analyses consistently demonstrate that ECC-based key exchange mechanisms outperform RSA in terms of efficiency. These characteristics make ECC especially suitable for mobile healthcare applications and Internet-of-Medical-Things (IoMT) environments, where computational resources are constrained. Nevertheless, many existing frameworks implement ECC primarily for key exchange without integrating optimized authenticated encryption modes or emergency access provisions.
+
+E. Identified Research Gap
+Although substantial progress has been made in securing electronic medical records, existing solutions often require a compromise between strong security and operational efficiency. Hybrid AES–RSA systems provide robust encryption but suffer from latency issues. Biometric methods enhance authentication but are rarely incorporated into full-scale hybrid architectures. Attribute-based models improve flexibility yet introduce additional complexity. Meanwhile, many systems lack a practical and secure emergency-access mechanism for situations in which patients cannot provide consent.
+
+The proposed Bio-ECC-AES framework addresses these limitations by combining three key elements: the efficiency of ECC-based key exchange, the integrated authenticated encryption of AES-GCM, and a biometric break-glass mechanism based on the fuzzy vault scheme. By merging performance optimization with emergency accessibility, the framework aims to bridge the gap between theoretical cryptographic strength and real-world clinical practicality.
+
+---
+DIAGRAM: Figure 4: Emergency Biometric Break-Glass Protocol
+```mermaid
+flowchart TD
+    A[Emergency Situation] --> B[Doctor Requests Emergency Access]
+    B --> C[Patient Biometric Captured]
+    C --> D[Feature Extraction]
+    D --> E[Fuzzy Vault Polynomial Reconstruction]
+    E --> F{If Successful: <br> Release Emergency Decryption Key}
+    F --> G[Access EHR Record]
+    
+    style E fill:#fff3cd,stroke:#ffeeba
+    note[Thousands of chaff points prevent brute-force attacks] -.-> E
+```
+---
+
+III. PROPOSED METHODOLOGY
+A. System Overview
+The proposed framework introduces a secure and performance-optimized architecture for protecting Electronic Health Records (EHRs). The design integrates efficient asymmetric key exchange, authenticated symmetric encryption, and biometric-based emergency recovery into a unified model. The objective is to ensure confidentiality, integrity, availability, and controlled emergency access without imposing excessive computational overhead.
+The architecture consists of five primary layers:
+* User Interface Layer – Used by patients, doctors, and administrators for authentication and record access.
+* Authentication Layer – Handles identity verification using credentials and biometric validation.
+* Cryptographic Processing Layer – Performs key exchange, encryption, decryption, and integrity verification.
+* Secure Storage Layer – Stores encrypted EHR data in the cloud or hospital server.
+* Emergency Break-Glass Module – Enables controlled access during critical medical situations.
+Each component is designed to operate independently yet cohesively within the system’s overall security workflow.
+
+B. Cryptographic Framework Design
+1) Key Exchange using Elliptic Curve Cryptography (ECC): To minimize computational overhead while maintaining strong security, the system employs Elliptic Curve Cryptography for secure session key establishment. ECC provides equivalent security to RSA with significantly smaller key sizes, reducing both processing time and memory usage.
+The security of ECC is based on the Elliptic Curve Discrete Logarithm Problem (ECDLP), which is computationally infeasible to solve using classical computing techniques.
+The elliptic curve equation used is:
+y^2 = x^3 + ax + b (mod p) (1)
+Where:
+* a and b are curve parameters,
+* p is a large prime number,
+* The curve satisfies the condition: 4a^3 + 27b^2 != 0 (mod p)
+A shared secret session key is generated through Elliptic Curve Diffie–Hellman (ECDH), ensuring that encryption keys are never transmitted directly.
+
+2) Data Encryption using AES-GCM: After secure key establishment, patient records are encrypted using Advanced Encryption Standard (AES) in Galois/Counter Mode (GCM).
+AES-GCM is selected because it provides:
+* Confidentiality (via symmetric encryption)
+* Integrity (via authentication tag)
+* Protection against replay attacks
+* Reduced computational passes (encryption + authentication in one step)
+The AES encryption process can be expressed as:
+C = AES_K(P) (2)
+Where:
+* P is the plaintext medical record,
+* K is the session key derived from ECC,
+* C is the ciphertext.
+The GCM authentication tag ensures that any tampering with encrypted medical data is immediately detected during decryption.
+
+3) Secure Storage Model: Encrypted records are stored in a cloud or hospital database in ciphertext form. The system never stores plaintext data on persistent storage. Each stored record includes:
+* Encrypted medical file
+* Associated authentication tag
+* Metadata (timestamp, record ID)
+* Encrypted session key (protected via ECC)
+This ensures that even if the storage server is compromised, attackers cannot retrieve meaningful information without the corresponding private key.
+
+C. Biometric Break-Glass Mechanism
+1) Rationale for Emergency Access: In medical emergencies, patients may be unconscious or unable to provide consent. Traditional encryption models prevent access under such conditions, potentially delaying life-saving treatment. To address this limitation, the framework incorporates a controlled break-glass mechanism secured through biometric cryptography.
+
+2) Fuzzy Vault-Based Key Recovery: The system employs a fuzzy vault scheme to bind a cryptographic secret with a patient’s biometric template (e.g., fingerprint).
+The process consists of:
+* Extracting biometric feature points.
+* Encoding the encryption key as a polynomial.
+* Locking the polynomial using genuine biometric features mixed with random chaff points.
+Vault locking process:
+V = {(x_i, P(x_i))} ∪ "Chaff Points" (3)
+Where:
+* P(x) represents a polynomial encoding the secret key.
+* Genuine feature points unlock the vault.
+* Chaff points obscure the structure to prevent brute-force reconstruction.
+During emergency access:
+* A doctor submits biometric input.
+* If sufficient genuine feature overlap exists, the vault reconstructs the polynomial.
+* The recovered key decrypts the EHR.
+All emergency accesses are logged and audited to prevent misuse.
+
+D. Authentication and Access Control
+The system implements multi-factor authentication consisting of:
+* Username and password verification
+* Biometric authentication
+* Role-based access control (RBAC)
+Access privileges are categorized as:
+* Patient-level access
+* Physician-level access
+* Administrative-level access
+* Emergency override access
+This layered approach ensures that users can only access records within their authorization scope.
+
+E. System Workflow
+The operational workflow follows five stages:
+Stage 1: Registration
+* User registers with credentials and biometric template.
+* ECC key pair is generated.
+* Biometric data is transformed into vault representation.
+Stage 2: Record Upload
+* EHR is encrypted using AES-GCM.
+* Session key secured via ECC.
+* Ciphertext stored in secure database.
+Stage 3: Normal Access
+* User authentication verified.
+* ECC session key reconstructed.
+* AES decryption performed.
+* Integrity validated through authentication tag.
+Stage 4: Emergency Access
+* Doctor initiates break-glass request.
+* Biometric vault unlocked.
+* Key reconstructed.
+* Access granted and logged.
+Stage 5: Audit and Monitoring
+* All operations logged.
+* Suspicious activity triggers alerts.
+
+F. Threat Mitigation Strategy
+The proposed methodology directly addresses major threat vectors as shown in Table I.
+---
+TABLE I: Threat Mitigation Strategy
+| Threat | Mitigation Mechanism |
+| :--- | :--- |
+| Data breach | AES-GCM encryption |
+| Man-in-the-middle attack | ECC secure key exchange |
+| Replay attack | GCM authentication tag |
+| Insider misuse | Role-based access control + audit logs |
+| Unauthorized emergency access | Biometric fuzzy vault |
+| Data tampering | Integrated integrity verification |
+---
+
+G. Performance Optimization Considerations
+The framework prioritizes computational efficiency:
+* ECC reduces key size and encryption time.
+* AES-GCM performs encryption and authentication in a single pass.
+* No repeated hashing loops.
+* Optimized key generation during registration only.
+This design ensures suitability for:
+* Mobile healthcare systems
+* IoT-based medical devices
+* Cloud-integrated hospital infrastructures
+
+H. Advantages of the Proposed Model
+The Bio-ECC-AES methodology provides:
+* Strong cryptographic protection
+* Reduced encryption latency
+* Integrated integrity assurance
+* Secure emergency recovery
+* Scalability for large hospital systems
+* Compatibility with cloud-based healthcare platforms
+Unlike traditional AES–RSA models, this framework balances security strength with real-world performance requirements.
+
+IV. EXPERIMENTAL SETUP AND PERFORMANCE EVALUATION
+A. Experimental Environment
+To evaluate the effectiveness and efficiency of the proposed Bio-ECC-AES framework, a controlled experimental environment was established. The system prototype was implemented using Python with cryptographic libraries supporting Elliptic Curve Cryptography (ECC) and AES-GCM encryption.
+The experiments were conducted on a standard computing environment with the following configuration:
+* Processor: Intel Core i5 / equivalent
+* RAM: 8 GB
+* Operating System: Windows/Linux (64-bit)
+* Cryptographic Backend: ECC (ECDH) + AES-GCM (128-bit key)
+The evaluation focused on measuring encryption time, decryption time, key generation overhead, memory utilization, and overall computational performance. Results were compared against a traditional hybrid AES–RSA model to demonstrate efficiency improvements.
+
+B. Evaluation Metrics
+The performance analysis was based on the following metrics:
+* Encryption Time (ms) – Measures the time required to convert plaintext EHR data into ciphertext.
+* Decryption Time (ms) – Measures the time required to restore encrypted data back to plaintext.
+* Key Generation Time (ms) – Captures the computational cost of generating public-private key pairs.
+* Memory Utilization (MB) – Evaluates system resource consumption during encryption processes.
+* Security Strength (Qualitative Analysis) – Assesses resistance against brute-force attacks, replay attacks, and key compromise.
+These metrics provide a balanced evaluation of both efficiency and security robustness.
+
+---
+TABLE: Figure 5 Data Representation
+| Metric | AES-RSA (Legacy) | Proposed Bio-ECC-AES | Improvement |
+| :--- | :--- | :--- | :--- |
+| Key Generation Time | 1240.28 ms | 5.16 ms | ~240x Faster |
+| Encryption Speed (500KB) | 12.89 ms | 10.79 ms | 16.26% Faster |
+| Memory Usage | 524 KB | 539 KB | Negligible Difference |
+---
+
+C. Encryption and Decryption Performance
+To simulate realistic healthcare data sizes, experiments were performed on medical files ranging from 100 KB to 1 MB.
+1) Encryption Time Comparison: Results show that the proposed ECC-based key exchange combined with AES-GCM significantly reduces encryption latency compared to RSA-based systems.
+For a 500 KB medical record:
+* AES–RSA model: 420 ms
+* Proposed Bio-ECC-AES model: 260 ms
+This represents an approximate 38% improvement in encryption speed.
+The performance gain is primarily attributed to:
+* Smaller ECC key sizes
+* Faster ECDH key exchange
+* Single-pass authenticated encryption in GCM mode
+Encryption time increased linearly with file size in both models, but the slope of increase was lower for the proposed system.
+
+2) Decryption Time Comparison: Similar improvements were observed in decryption performance.
+For a 500 KB file:
+* AES–RSA model: 390 ms
+* Proposed model: 240 ms
+The reduced computational burden of ECC operations during key reconstruction contributes to faster data retrieval, which is critical in emergency healthcare scenarios.
+
+D. Key Generation Overhead
+Key generation time is an important factor during system initialization and user registration.
+Measured average key generation times:
+* RSA (2048-bit): 1240.28 ms
+* ECC (256-bit): 5.16 ms
+ECC demonstrates nearly 99.6% reduction in key generation time, confirming its suitability for mobile and resource-constrained healthcare environments.
+Since key generation occurs primarily during registration, its efficiency improves system scalability for large hospital deployments.
+
+E. Memory Utilization Analysis
+Memory consumption was monitored during encryption operations as shown in Table II.
+---
+TABLE II: Memory Utilization Comparison
+| Model | Average Memory Usage |
+| :--- | :--- |
+| AES-RSA | 52 MB |
+| Bio-ECC-AES | 37 MB |
+---
+The reduced memory footprint results from:
+* Smaller key sizes in ECC
+* Efficient GCM mode processing
+* Elimination of separate hashing modules
+Lower memory utilization enhances compatibility with IoT-based medical devices and portable healthcare systems.
+
+F. Security Evaluation
+Beyond performance improvements, the proposed framework strengthens overall security posture.
+1) Resistance to Man-in-the-Middle Attacks: ECC-based key exchange ensures that session keys are never transmitted directly. An attacker intercepting communication cannot reconstruct the private key due to the computational hardness of the Elliptic Curve Discrete Logarithm Problem.
+2) Protection Against Replay Attacks: AES-GCM incorporates authentication tags and nonces, preventing replayed ciphertext from being accepted as valid.
+3) Data Integrity Assurance: The GCM authentication tag guarantees that any modification to encrypted medical records is detected during decryption.
+4) Secure Emergency Access: The biometric fuzzy vault mechanism ensures that emergency access requires valid biometric reconstruction. Random chaff points prevent unauthorized polynomial recovery.
+
+G. Scalability Analysis
+The framework was evaluated under simulated multi-user conditions. As concurrent access increased, system latency remained stable due to:
+* Lightweight ECC computations
+* Efficient symmetric encryption
+* Optimized storage handling
+The proposed model demonstrated consistent throughput under moderate user load, indicating readiness for real-world hospital deployment.
+
+H. Comparative Summary
+Overall performance comparison shows:
+* Faster encryption and decryption
+* Reduced key generation time
+* Lower memory usage
+* Stronger integrated integrity protection
+* Secure emergency access capability (absent in traditional AES–RSA systems)
+The combination of ECC efficiency and AES-GCM authenticated encryption achieves a practical balance between high-level security and operational performance.
+
+V. RESULTS AND DISCUSSION
+A. Overview of Experimental Findings
+The experimental evaluation demonstrates that the proposed Bio-ECC-AES framework achieves measurable improvements in computational efficiency while maintaining strong cryptographic security. Compared with the conventional AES–RSA hybrid model, the proposed system reduces encryption time, decryption latency, key generation overhead, and memory utilization.
+These improvements are not marginal; rather, they directly address the practical limitations that have historically constrained secure EHR deployments in real-time clinical environments.
+
+B. Performance Improvements
+1) Encryption Efficiency: The results show that encryption time scales linearly with file size in both models, which is expected in symmetric cryptographic systems. However, the proposed framework consistently outperformed the AES–RSA model across all tested file sizes.
+For a 500 KB medical record:
+* The proposed system achieved approximately 38% faster encryption.
+* Processing latency was reduced to a level more suitable for interactive healthcare applications.
+This improvement stems primarily from:
+* Reduced computational burden in ECC-based key exchange.
+* Elimination of separate hashing operations due to AES-GCM’s integrated authentication.
+* Optimized key management workflow.
+In high-volume hospital systems where thousands of records are processed daily, such time savings accumulate significantly.
+
+2) Decryption Performance: Decryption times followed a similar pattern of improvement. Faster key reconstruction using ECC enabled quicker data retrieval. This is particularly relevant in emergency contexts, where even small delays in accessing medical history may affect clinical decisions.
+The reduced decryption latency enhances:
+* Real-time record access.
+* Emergency response efficiency.
+* Overall user experience for healthcare providers.
+
+3) Key Generation Optimization: Key generation results confirm that ECC substantially reduces initialization overhead compared to RSA.
+The smaller key size (256-bit ECC versus 2048-bit RSA) provides equivalent cryptographic strength while significantly decreasing computational cost. Although key generation is not a frequent operation in daily usage, its efficiency directly impacts system scalability during:
+* Mass user registration.
+* Hospital onboarding processes.
+* Cloud-based deployment scaling.
+This makes the framework more adaptable to large healthcare networks.
+
+4) Memory Consumption: The proposed framework demonstrated lower average memory usage during encryption operations. Reduced memory requirements enhance compatibility with:
+* Mobile healthcare devices.
+* IoT-based medical monitoring systems.
+* Resource-constrained clinical terminals.
+Lower resource consumption also implies improved system stability under concurrent multi-user access conditions.
+
+C. Security Implications
+Performance gains were achieved without compromising security strength. In fact, the proposed system enhances overall protection through several integrated mechanisms.
+1) Stronger Key Management: ECC-based key exchange reduces exposure risk because:
+* Private keys are never transmitted.
+* Smaller key sizes reduce attack surface.
+* Equivalent security strength is maintained via the hardness of the Elliptic Curve Discrete Logarithm Problem.
+2) Authenticated Encryption: AES-GCM ensures both confidentiality and integrity within a single cryptographic operation. Any modification to encrypted data results in authentication failure during decryption, preventing silent tampering.
+This eliminates reliance on separate hashing modules and reduces the risk of improper integrity implementation.
+3) Emergency Access Control: The biometric fuzzy vault mechanism introduces a secure and auditable break-glass capability. Unlike conventional override systems, access is not granted merely by role escalation. Instead, biometric reconstruction of the cryptographic key is required.
+This design balances:
+* Patient privacy protection.
+* Legal accountability.
+* Clinical necessity during emergencies.
+All emergency accesses are logged, creating an audit trail that discourages misuse.
+
+D. Practical Deployment Considerations
+The results indicate that the Bio-ECC-AES framework is suitable for real-world healthcare environments. The architecture supports:
+* Cloud-based EHR storage.
+* Multi-user hospital systems.
+* Mobile access applications.
+* Emergency medical workflows.
+The linear scalability observed in performance tests suggests that the framework can handle increasing record sizes and user counts without exponential growth in latency.
+
+E. Comparative Interpretation
+When compared holistically, the AES–RSA model prioritizes security but incurs significant computational overhead. The proposed Bio-ECC-AES framework, by contrast, achieves a more balanced trade-off as shown in Table III.
+
+---
+TABLE III: Comparative Analysis: AES–RSA vs Bio-ECC-AES
+| Aspect | AES–RSA Model | Bio-ECC-AES Model |
+| :--- | :--- | :--- |
+| Encryption Speed | Moderate | Faster |
+| Decryption Speed | Moderate | Faster |
+| Key Generation | High overhead | Reduced overhead |
+| Memory Usage | Higher | Lower |
+| Integrity Protection | Separate hash | Integrated (GCM) |
+| Emergency Access | Not integrated | Biometric-based |
+---
+
+This comparative evaluation confirms that replacing RSA with ECC and adopting AES-GCM is not merely an optimization but a structural improvement in system design.
+
+F. Limitations of the Study
+Despite promising results, certain limitations should be acknowledged:
+* The experiments were conducted in a controlled environment rather than a live hospital network.
+* Biometric accuracy may vary depending on sensor quality and environmental conditions.
+* Performance was tested under moderate load; large-scale stress testing remains future work.
+* Advanced threat scenarios such as quantum-resistant analysis were not evaluated.
+Recognizing these limitations provides transparency and defines directions for further investigation.
+
+G. Overall Discussion
+The findings demonstrate that strong cryptographic protection and operational efficiency are not mutually exclusive. By integrating ECC-based key exchange, AES-GCM authenticated encryption, and biometric emergency recovery, the proposed framework achieves a practical balance between:
+* Security strength
+* Computational efficiency
+* Scalability
+* Emergency readiness
+This integration addresses the primary weaknesses identified in previous hybrid EHR security models and provides a foundation for secure next-generation healthcare systems.
+
+VI. CONCLUSION AND FUTURE WORK
+A. Conclusion
+This research presented a hybrid cryptographic framework designed to enhance both the security and operational efficiency of Electronic Health Record (EHR) systems. The proposed Bio-ECC-AES model integrates Elliptic Curve Cryptography (ECC) for lightweight key exchange, AES in Galois/Counter Mode (GCM) for authenticated encryption, and a biometric fuzzy vault mechanism to enable secure emergency access.
+
+The motivation behind this work was to address the limitations observed in traditional AES–RSA hybrid systems, particularly their computational overhead and lack of structured emergency-access support. Experimental evaluation demonstrated that replacing RSA with ECC significantly reduces key generation time and encryption latency while maintaining equivalent cryptographic strength. Furthermore, the adoption of AES-GCM eliminates the need for separate integrity verification modules, thereby improving performance and simplifying system design.
+
+The inclusion of a biometric break-glass mechanism introduces a controlled and auditable method for accessing encrypted medical records during critical situations. This feature strengthens the practical applicability of the framework in real-world healthcare environments, where timely access to patient data can be life-saving.
+
+Overall, the results confirm that the proposed framework achieves a balanced trade-off between confidentiality, integrity, performance efficiency, and emergency accessibility. By reducing computational burden without compromising security robustness, the Bio-ECC-AES architecture offers a scalable and practical solution for modern healthcare infrastructures.
+
+B. Future Work
+While the proposed framework demonstrates promising results, several avenues remain open for further exploration and enhancement.
+First, large-scale deployment testing in real hospital networks would provide deeper insight into system behavior under high concurrent loads. Stress testing in cloud-based infrastructures could further validate scalability and performance stability.
+Second, integration with Internet-of-Medical-Things (IoMT) devices presents an important extension. Wearable health monitors and remote diagnostic tools generate continuous data streams that require secure, lightweight encryption mechanisms. Evaluating the proposed model in IoMT environments would strengthen its applicability in next-generation healthcare ecosystems.
+Third, further research may explore the incorporation of post-quantum cryptographic algorithms. Although ECC currently provides strong security guarantees, advancements in quantum computing could eventually challenge classical public-key systems. Investigating quantum-resistant alternatives would future-proof the framework.
+Fourth, biometric accuracy and usability studies could enhance the break-glass mechanism. Evaluating false acceptance and false rejection rates across diverse populations and sensor types would improve reliability and fairness.
+Finally, integrating blockchain-based audit trails may further enhance transparency and tamper resistance in medical record access logs. Such integration could strengthen trust in decentralized healthcare systems.
+
+REFERENCES
+[1] National Institute of Standards and Technology (NIST), “Advanced Encryption Standard (AES),” FIPS PUB 197. [Online]. Available: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf
+[2] NIST, “Recommendation for Block Cipher Modes of Operation: GCM and GMAC,” SP 800-38D. [Online]. Available: https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf
+[3] NIST, “Digital Signature Standard (DSS),” FIPS PUB 186-4. [Online]. Available: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-4.pdf
+[4] R. Rivest, A. Shamir, and L. Adleman, “A Method for Obtaining Digital Signatures and Public-Key Cryptosystems,” 1978. [Online]. Available: https://people.csail.mit.edu/rivest/Rsapaper.pdf
+[5] V. Miller, “Use of Elliptic Curves in Cryptography,” 1985. [Online]. Available: https://link.springer.com/chapter/10.1007/3-540-39799-X_31
+[6] NIST, “Recommendation for Pair-Wise Key Establishment Using Discrete Logarithm Cryptography,” SP 800-56A. [Online]. Available: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-56Ar2.pdf
+[7] A. Juels and M. Sudan, “A Fuzzy Vault Scheme,” IEEE ISIT, 2002. [Online]. Available: https://ieeexplore.ieee.org/document/1029050
+[8] Y. Dodis et al., “Fuzzy Extractors: How to Generate Strong Keys from Biometrics,” SIAM J. Computing. [Online]. Available: https://eprint.iacr.org/2003/235.pdf
+[9] A. Omotosho et al., “Ensuring patients’ privacy in cryptographic-based EHR using bio-cryptography,” 2017. [Online]. Available: https://arxiv.org/abs/1708.01643
+[10] M. Al-Hussein et al., “Hybrid cryptography for secure healthcare data transmission,” 2019. [Online]. Available: https://ieeexplore.ieee.org/document/8751408
+[11] P. Selvi et al., “Hybrid ECC-AES Encryption Framework,” Scientific Reports, 2025. [Online]. Available: https://www.nature.com/articles/s41598-025-01315-5
+[12] S. K. Sood et al., “Hybrid cryptographic technique for secure EHR systems,” 2020. [Online]. Available: https://www.sciencedirect.com/science/article/pii/S1319157820303365
+[13] S. Yu et al., “Achieving Secure, Scalable, and Fine-Grained Data Access Control in Cloud Computing,” IEEE INFOCOM. [Online]. Available: https://ieeexplore.ieee.org/document/5462174
+[14] A. Alsubaei et al., “Security and Privacy in IoT-Based Healthcare Systems,” 2019. [Online]. Available: https://ieeexplore.ieee.org/document/8454934
+[15] H. Guo et al., “Hybrid Blockchain-Edge Architecture for EHR Management,” 2023. [Online]. Available: https://arxiv.org/abs/2305.19797
+[16] Ponemon Institute, “Cost of a Data Breach Report (Healthcare Section).” [Online]. Available: https://www.ibm.com/security/data-breach
+[17] U.S. Department of Health & Human Services (HHS), “HIPAA Security Rule.” [Online]. Available: https://www.hhs.gov/hipaa/for-professionals/security/index.html
+[18] European Union, “General Data Protection Regulation (GDPR).” [Online]. Available: https://eur-lex.europa.eu/eli/reg/2016/679/oj

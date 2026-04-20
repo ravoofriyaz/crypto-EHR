@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacist Panel - SecureEHR</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-brand doctor">
+            <i class="fas fa-prescription-bottle-alt"></i>
+            <span>SecureEHR</span>
+        </div>
+
+        <ul class="sidebar-nav">
+            <li class="nav-item">
+                <a href="#" class="nav-link active" onclick="showSection('section-dashboard', this)">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="#" class="nav-link" onclick="showSection('section-search-patient', this)">
+                    <i class="fas fa-search"></i>
+                    <span>Search Patient</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="logout-container">
+            <button class="btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div>
+                <h1>Hello, Pharmacist <span id="displayPharmacistName">Name</span></h1>
+                <p>ID: <span id="displayPharmacistId">Loading...</span></p>
+            </div>
+            <div class="profile-icon"
+                style="width: 50px; height: 50px; background: #6c5ce7; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="fas fa-prescription-bottle-alt"></i>
+            </div>
+        </div>
+
+        <!-- SECTION: DASHBOARD -->
+        <div id="section-dashboard" class="content-section">
+            <div class="dashboard-grid">
+                <!-- Profile Summary Card -->
+                <div class="dashboard-card">
+                    <h3><i class="fas fa-prescription-bottle-alt" style="color: #6c5ce7; margin-right: 8px;"></i>
+                        Profile Status</h3>
+                    <p><strong>Pharmacy:</strong> <span id="dispShopName">Not Set</span></p>
+                    <p><strong>License:</strong> <span id="dispLicense">Not Set</span></p>
+
+                    <button class="btn btn-secondary" style="font-size: 0.8rem; padding: 8px 15px;"
+                        onclick="toggleDoctorEditProfile()">Edit Info</button>
+
+                    <div id="doctorInfoEdit"
+                        style="display:none; margin-top:15px; border-top: 1px solid #eee; padding-top: 15px;">
+                        <input type="text" id="editDocName" placeholder="Pharmacist Name"
+                            style="width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                        <input type="text" id="editShopName" placeholder="Pharmacy Shop Name"
+                            style="width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                        <input type="text" id="editDocLicense" placeholder="License Number"
+                            style="width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                        <button class="btn btn-primary" style="padding: 8px 15px;" onclick="updateDoctorProfile()">Save
+                            Changes</button>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+
+
+        <!-- SECTION: SEARCH PATIENT -->
+        <div id="section-search-patient" class="content-section" style="display: none;">
+            <div class="dashboard-card" id="fetchRecordContainer">
+                <h3><i class="fas fa-search-plus" style="color: #6c5ce7; margin-right: 8px;"></i> View
+                    Patient History</h3>
+                <p>Access authorized records securely.</p>
+
+                <!-- Search Type Toggle -->
+                <div style="display: flex; gap: 15px; margin-top: 10px; margin-bottom: 20px;">
+                    <!-- By Phone Card -->
+                    <div id="btnHistorySearchPhone" onclick="setHistorySearchType('num')"
+                        style="flex: 1; text-align: center; padding: 15px; border-radius: 8px; border: 2px solid #6c5ce7; background: #f3f0ff; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        <i class="fas fa-phone"
+                            style="font-size: 1.5rem; color: #6c5ce7; margin-bottom: 8px; display: block;"></i>
+                        <span style="font-weight: 600; color: #333;">By Phone Number</span>
+                    </div>
+
+                    <!-- By ID Card -->
+                    <div id="btnHistorySearchId" onclick="setHistorySearchType('id')"
+                        style="flex: 1; text-align: center; padding: 15px; border-radius: 8px; border: 1px solid #ddd; background: #f8f9fa; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <i class="fas fa-id-card"
+                            style="font-size: 1.5rem; color: #888; margin-bottom: 8px; display: block;"
+                            id="iconHistorySearchId"></i>
+                        <span style="font-weight: 600; color: #555;" id="textHistorySearchId">By Patient ID</span>
+                    </div>
+                </div>
+                <input type="hidden" id="historySearchType" value="num">
+
+                <!-- Phone Search Group -->
+                <div id="historySearchNumGroup" class="form-group"
+                    style="display:flex; gap: 10px; margin-bottom: 20px;">
+                    <select id="historyCountryCode"
+                        style="padding: 12px; border-radius: 8px; border: 1px solid #ccc; background:#eee; width: 30%;">
+                        <option value="+91">🇮🇳 +91</option>
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+44">🇬🇧 +44</option>
+                    </select>
+                    <input type="tel" id="fetchPatientPhone" placeholder="Mobile Number"
+                        style="flex:1; padding: 12px; border-radius: 8px; border: 1px solid #ccc;">
+                    <button class="btn btn-primary" onclick="fetchPatientRecords()"
+                        style="background:#6c5ce7; border:none;">Search</button>
+                </div>
+
+                <!-- ID Search Group -->
+                <div id="historySearchIdGroup" class="form-group" style="display:none; gap: 10px; margin-bottom: 20px;">
+                    <input type="text" id="fetchPatientIdOnly" placeholder="Enter Patient ID"
+                        style="flex:1; padding: 12px; border-radius: 8px; border: 1px solid #ccc;">
+                    <button class="btn btn-primary" onclick="fetchPatientRecords()"
+                        style="background:#6c5ce7; border:none;">Find Prescriptions</button>
+                </div>
+
+                <div id="patientSearchResults" style="margin-top: 15px;"></div>
+
+                <div id="patientRecordsList" style="margin-top: 20px; max-height: 400px; overflow-y: auto;">
+                    <!-- Results here -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="success-msg" style="position: fixed; top: 20px; right: 20px;"></div>
+
+    <script src="app.js"></script>
+    <script>
+        function setHistorySearchType(type) {
+            document.getElementById('historySearchType').value = type;
+            const btnPhone = document.getElementById('btnHistorySearchPhone');
+            const btnId = document.getElementById('btnHistorySearchId');
+
+            if (type === 'num') {
+                document.getElementById('historySearchNumGroup').style.display = 'flex';
+                document.getElementById('historySearchIdGroup').style.display = 'none';
+
+                // Style Phone Active
+                btnPhone.style.border = '2px solid #6c5ce7';
+                btnPhone.style.background = '#f3f0ff';
+                btnPhone.querySelector('i').style.color = '#6c5ce7';
+                btnPhone.querySelector('span').style.color = '#333';
+
+                // Style ID Inactive
+                btnId.style.border = '1px solid #ddd';
+                btnId.style.background = '#f8f9fa';
+                btnId.querySelector('i').style.color = '#888';
+                btnId.querySelector('span').style.color = '#555';
+            } else {
+                document.getElementById('historySearchNumGroup').style.display = 'none';
+                document.getElementById('historySearchIdGroup').style.display = 'flex';
+
+                // Style ID Active
+                btnId.style.border = '2px solid #6c5ce7';
+                btnId.style.background = '#f3f0ff';
+                btnId.querySelector('i').style.color = '#6c5ce7';
+                btnId.querySelector('span').style.color = '#333';
+
+                // Style Phone Inactive
+                btnPhone.style.border = '1px solid #ddd';
+                btnPhone.style.background = '#f8f9fa';
+                btnPhone.querySelector('i').style.color = '#888';
+                btnPhone.querySelector('span').style.color = '#555';
+            }
+        }
+
+        // Inline Init
+        window.onload = function () {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user || user.role !== 'pharmacist') {
+                window.location.href = 'index.html';
+                return;
+            }
+            document.getElementById('displayPharmacistName').innerText = user.name;
+            document.getElementById('displayPharmacistId').innerText = user.userId;
+
+            // Profile Fields
+            document.getElementById('dispShopName').innerText = user.shopName || "Not Set";
+            document.getElementById('dispLicense').innerText = user.license || "Not Set";
+
+            // Pre-fill edit fields
+            document.getElementById('editDocName').value = user.name || "";
+            document.getElementById('editShopName').value = user.shopName || "";
+            document.getElementById('editDocLicense').value = user.license || "";
+        }
+    </script>
+</body>
+
+</html>
